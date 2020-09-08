@@ -130,13 +130,9 @@ properly then just download `plantuml2mysql.py` to appropriate location and
 run as any other Python script.
 
 # Reference
- https://github.com/grafov/plantuml2mysql
+grafov [https://github.com/grafov/plantuml2mysql]
 
 Thank for contributions: 
-
-* Benoît Bailleux for a lot of features.
-
-# Mentions
 
 * [An ecosystem of tools around PlantUML to render textual UML diagrams anywhere you want](https://modeling-languages.com/plantuml-textual-uml-online/)
 
