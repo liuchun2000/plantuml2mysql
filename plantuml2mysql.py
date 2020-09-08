@@ -74,8 +74,9 @@ def main():
         if l.startswith("entity"):
             table = True; field = False
             primary = []; index = ""
-            # Table names are quoted and lower cased to avoid conflict with a mySQL reserved word
-            print("CREATE TABLE IF NOT EXISTS `" + i[1].lower() + "` (")
+            # Table names are quoted and lower cased to avoid conflict with a mySQL reserved wordpr
+            print("drop table if exists `" +i[1].lower() + "`;")
+            print("CREATE TABLE `" + i[1].lower() + "` (")
             continue
         if table and not field:
             if l == "==": # Seperator after table description
