@@ -36,7 +36,7 @@ def main():
         sys.exit()
     # Add information for future self ;-)
     print("# Database created on", time.strftime('%d/%m/%y %H:%M',time.localtime()), "from", sys.argv[1])
-    print("CREATE DATABASE %s CHARACTER SET = utf8 COLLATE = %s;" % (sys.argv[2], CHARSET))
+    print("CREATE DATABASE %s CHARACTER SET = utf8mb4 COLLATE = %s;" % (sys.argv[2], CHARSET))
     print("USE %s;\n" % sys.argv[2])
     uml = False; table = False; field = False
     pk = False; idx = False
@@ -92,10 +92,15 @@ def main():
         if field and l == "#id":
             print("  %-16s SERIAL," % "id")
         if field and l != "#id":
-            print("  %-16s %s" % (fname, " ".join(i[2:]).upper()), end="")
-            if comment:
-                # Avoid conflict with apostrophes (use double quotation marks)
-                print(" COMMENT \"%s\"" % strip_html_tags(comment.strip()), end="")
+            print("  %-16s %s" % (fname, " ".join(i[2:]).upper()), end=" ")
+            if comment: #other description
+                list = comment.split(";") #max 3 null/not null/auto_increment, default xxx,real comment
+                for item in list:
+                    if ('null' in item.lower() or 'auto_increment' in item.lower() or 'default' in item.lower()) :
+                        print(strip_html_tags(item.strip()),end=" ")
+                    else:
+                        # Avoid conflict with apostrophes (use double quotation marks)
+                        print(" COMMENT \"%s\"" % strip_html_tags(item.strip()), end="")
             print(",")
         if field and pk:
             primary.append(fname)
