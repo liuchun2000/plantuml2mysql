@@ -85,11 +85,11 @@ def main():
                 tableComment = l
         if field and l == "}":
             table = False; field = False
-            print(" creator                   varchar(64)  null, ")
-            print("gmt_create                datetime     null,")
-            print("updater                   varchar(64)  null,")
-            print("gmt_modified              datetime     null,")
-            print("  PRIMARY KEY (%s)" % ", ".join(primary), end="")
+            print(" CREATOR          VARCHAR(64)  NULL,")
+            print(" GMT_CREATE       DATETIME     NULL,")
+            print(" UPDATER          VARCHAR(64)  NULL,")
+            print(" GMT_MODIFIED     DATETIME     NULL,")
+            print(" PRIMARY KEY (%s)" % ", ".join(primary), end="")
             if index:
                 print(",\n%s" % index[:-2],)
                 index = ""
