@@ -8,31 +8,42 @@ with `#` prefix in field name (it means protected field
 in PlantUML) and define index fields with `+` (public field
 in PlantUML) prefix.
 
-Field type noted after field name as is. Also you may
-use comments after `--`.
+Field type noted after field name as is. Support null/not null/auto_increment 
+ default value and comment that with the quotes
 
-For example class definition:
+For example entity definition:
 
-    @startuml
-
-    class dummy {
-      Sample table.
-      ==
-      #id int(10) -- A comment
-      field1 int(10)
-      .. Comment line, ignored ..
-      field2 varchar(128)
-    }
-
-    @enduml
+```plantuml
+entity cmdb_asset_category {
+  资产分类
+  ==
+  #id int(11) not null '主键id'
+  asset_category_type varchar(32) not null '资产类型,相同用途下唯一'
+  asset_category_name varchar(64) not null '分类名称'
+  asset_category_purpose tinyint(1) not null  '用途 0-设备 1-软件 2-虚拟机'
+  asset_category_leaf tinyint(4) not null default 0 '是否叶子节点 0否 1是'
+  asset_category_desc varchar(512) null '备注'
+  asset_category_parent_id int(11) not null default0 '父分类id'
+  asset_category_display_order int(6) not null default0 '显示顺序 从小到大'
+}
+```
 
 will be converted to SQL:
 
-    CREATE TABLE IF NOT EXISTS `dummy` (
-      id               INT(10) COMMENT 'A comment',
-      field1           INT(10),
-      field2           VARCHAR(128),
-      PRIMARY KEY (id));
+    CREATE TABLE IF NOT EXISTS `cmdb_asset_category` (
+        id               INT(11) NOT NULL  COMMENT '主键id',
+        asset_category_type VARCHAR(32) NOT NULL  COMMENT '资产类型,相同用途下唯一',
+        asset_category_name VARCHAR(64) NOT NULL  COMMENT '分类名称',
+        asset_category_purpose TINYINT(1) NOT NULL  COMMENT '用途 0-设备 1-软件 2-虚拟机',
+        asset_category_leaf TINYINT(4) NOT NULL DEFAULT 0  COMMENT '是否叶子节点 0否 1是',
+        asset_category_desc VARCHAR(512) NULL  COMMENT '备注',
+        asset_category_parent_id INT(11) NOT NULL DEFAULT0  COMMENT '父分类id',
+        asset_category_display_order INT(6) NOT NULL DEFAULT0  COMMENT '显示顺序 从小到大',
+        creator                   varchar(64)  null, 
+        gmt_create                datetime     null,
+        updater                   varchar(64)  null,
+        gmt_modified              datetime     null,
+        PRIMARY KEY (id)) COMMENT '资产分类';
 
 Text between class name and `==` is table description.
 The description of the table is mandatory.
@@ -53,52 +64,63 @@ See below the result of a more complicated sample from [database.plu](database.p
 ```
 
 ```sql
-    CREATE DATABASE sampledb CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
-    USE sampledb;                                                           
-                                                                            
-    CREATE TABLE IF NOT EXISTS `user` (                                       
-      id               SERIAL,                                              
-      login            VARCHAR(16),                                         
-      mail             VARCHAR(64),                                         
-      docsRef          INT(10) COMMENT 'referenced docs for a user',        
-      created          INT(11),                                             
-      sesid            INT(11),                                             
-      PRIMARY KEY (id),                                                     
-      INDEX (login),                                                        
-      INDEX (mail)                                                          
-    );                                                                      
-                                                                            
-    CREATE TABLE IF NOT EXISTS `session` (                                    
-      id               SERIAL,                                              
-      uid              INT(10) UNSIGNED,                                    
-      remoteip         INT(10) UNSIGNED,                                    
-      useragent        VARCHAR(255),                                        
-      data             LONGTEXT COMMENT 'serialized session data',          
-      lastseen         INT(11),                                             
-      PRIMARY KEY (id),                                                     
-      INDEX (uid),                                                          
-      INDEX (lastseen)                                                      
-    );                                                                      
-                                                                            
-    CREATE TABLE IF NOT EXISTS `docs` (                                       
-      id               INT(10),                                             
-      fid              INT(10) COMMENT 'link to a file',                    
-      aunthorid        INT(10),                                             
-      created          INT(11),                                             
-      PRIMARY KEY (id, fid),                                                
-      INDEX (aunthorid),                                                    
-      INDEX (created)                                                       
-    );                                                                      
-                                                                            
-    CREATE TABLE IF NOT EXISTS `files` (                                      
-      id               SERIAL,                                              
-      docId            INT(10),                                             
-      title            VARCHAR(255),                                        
-      path             VARCHAR(255),                                        
-      hash             INT(32) UNSIGNED,                                    
-      PRIMARY KEY (id),                                                     
-      INDEX (docId)                                                         
-    );                                                                      
+   CREATE DATABASE test CHARACTER SET = utf8mb4 COLLATE = utf8_unicode_ci;
+USE test;
+
+CREATE TABLE IF NOT EXISTS `cmdb_asset_category` (
+  id               INT(11) NOT NULL  COMMENT '主键id',
+  asset_category_type VARCHAR(32) NOT NULL  COMMENT '资产类型,相同用途下唯一',
+  asset_category_name VARCHAR(64) NOT NULL  COMMENT '分类名称',
+  asset_category_purpose TINYINT(1) NOT NULL  COMMENT '用途 0-设备 1-软件 2-虚拟机',
+  asset_category_leaf TINYINT(4) NOT NULL DEFAULT 0  COMMENT '是否叶子节点 0否 1是',
+  asset_category_desc VARCHAR(512) NULL  COMMENT '备注',
+  asset_category_parent_id INT(11) NOT NULL DEFAULT0  COMMENT '父分类id',
+  asset_category_display_order INT(6) NOT NULL DEFAULT0  COMMENT '显示顺序 从小到大',
+ creator                   varchar(64)  null, 
+gmt_create                datetime     null,
+updater                   varchar(64)  null,
+gmt_modified              datetime     null,
+  PRIMARY KEY (id)) COMMENT '资产分类';
+
+CREATE TABLE IF NOT EXISTS `cmdb_asset` (
+  id               INT(11) NOT NULL  COMMENT '主键id',
+  asset_type       VARCHAR(32) NOT NULL  COMMENT '资产类型 对应cmdb_asset_category的asset_category_type',
+  asset_uuid       VARCHAR(64) NULL  COMMENT '资产唯一标识',
+  asset_desc       VARCHAR(512) NULL  COMMENT '备注',
+ creator                   varchar(64)  null, 
+gmt_create                datetime     null,
+updater                   varchar(64)  null,
+gmt_modified              datetime     null,
+  PRIMARY KEY (id)) COMMENT '资产';
+
+CREATE TABLE IF NOT EXISTS `cmdb_asset_extend` (
+  id               INT(11)  COMMENT '主键id',
+  asset_id         INT(11) NOT NULL  COMMENT '资产id',
+  asset_extend_key VARCHAR(64) NOT NULL  COMMENT 'key值',
+  asset_extend_value MEDIUMTEXT NOT NULL  COMMENT 'value值',
+ creator                   varchar(64)  null, 
+gmt_create                datetime     null,
+updater                   varchar(64)  null,
+gmt_modified              datetime     null,
+  PRIMARY KEY (id),
+  INDEX (asset_id),
+  INDEX (asset_extend_key)
+) COMMENT '资产扩展数据';
+
+CREATE TABLE IF NOT EXISTS `cmdb_asset_extend_template` (
+  id               INT(11)  COMMENT '主键id',
+  asset_type       VARCHAR(32) NOT NULL  COMMENT '资产类型对应cmdb_asset_categor的asset_category_type',
+  asset_extend_template_key VARCHAR(64) NOT NULL  COMMENT 'key值',
+  asset_extend_template_ui MEDIUMTEXT NOT NULL  COMMENT '模板界面配置',
+  asset_extend_template_data MEDIUMTEXT NOT NULL  COMMENT '模板数据配置',
+  asset_extend_template_excel MEDIUMTEXT NOT NULL  COMMENT '模板Excel配置',
+  asset_extend_template_alert MEDIUMTEXT NOT NULL  COMMENT '模板告警配置',
+  asset_extend_template_desc VARCHAR(512) NULL  COMMENT '备注',
+ creator                   varchar(64)  null, 
+gmt_create                datetime     null,
+updater                   varchar(64)  null,
+gmt_modified              datetime     null,
+  PRIMARY KEY (id)) COMMENT '资产扩展数据模板';                                               
 ```
 
 # Installation
@@ -107,10 +129,8 @@ The script not uses external dependencies. If you have installed Python 3
 properly then just download `plantuml2mysql.py` to appropriate location and
 run as any other Python script.
 
-# Future
-
-I just satisfied with this code as is but new features and fixes are welcome.
-Code is public domain.
+# Reference
+ https://github.com/grafov/plantuml2mysql
 
 Thank for contributions: 
 

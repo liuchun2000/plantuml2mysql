@@ -45,21 +45,17 @@ def main():
         l = l.strip()
         if not l:
             continue
-        if l == "@startuml":
+        if l == "```plantuml":
             uml = True
             continue
         if not uml:
             continue
-        if l == "--": # Separator
-            continue
-        comment = ""
-        i = l.split()
+
+        comment = l.split("\'")
+        i = comment[0].split()
         fname = i[0]
         if fname == ".." or fname == "__": # Separators in table definition
             continue
-        if field and ("--" in l):
-            i, comment = l.split("--", 2)
-            i = i.split()
         pk = False; idx = False
         if fname[0] in ("+", "#"):
             if fname[0] == "#":
@@ -67,40 +63,45 @@ def main():
             else:
                 idx = True
             fname = fname[1:]
-        if l == "@enduml":
+        columnComment = ""
+        if field and len(comment)>1:
+            columnComment = comment[1]
+        if l == "```":
             uml = False
             continue
         if not uml:
              continue
-        if l.startswith("class"):
+        if l.startswith("entity"):
             table = True; field = False
             primary = []; index = ""
             # Table names are quoted and lower cased to avoid conflict with a mySQL reserved word
             print("CREATE TABLE IF NOT EXISTS `" + i[1].lower() + "` (")
             continue
-        if table and not field and l == "==": # Seperator after table description
-            field = True
-            continue
+        if table and not field:
+            if l == "==": # Seperator after table description
+                field = True
+                continue
+            else:
+                tableComment = l
         if field and l == "}":
             table = False; field = False
+            print(" creator                   varchar(64)  null, ")
+            print("gmt_create                datetime     null,")
+            print("updater                   varchar(64)  null,")
+            print("gmt_modified              datetime     null,")
             print("  PRIMARY KEY (%s)" % ", ".join(primary), end="")
             if index:
                 print(",\n%s" % index[:-2],)
                 index = ""
-            print(");\n")
+            print(") COMMENT \'%s\';\n" % tableComment.strip())
             continue
         if field and l == "#id":
             print("  %-16s SERIAL," % "id")
         if field and l != "#id":
-            print("  %-16s %s" % (fname, " ".join(i[2:]).upper()), end=" ")
-            if comment: #other description
-                list = comment.split(";") #max 3 null/not null/auto_increment, default xxx,real comment
-                for item in list:
-                    if ('null' in item.lower() or 'auto_increment' in item.lower() or 'default' in item.lower()) :
-                        print(strip_html_tags(item.strip()),end=" ")
-                    else:
-                        # Avoid conflict with apostrophes (use double quotation marks)
-                        print(" COMMENT \"%s\"" % strip_html_tags(item.strip()), end="")
+            print("  %-16s %s" % (fname, " ".join(i[1:]).upper()), end=" ")
+            if columnComment: #other description
+                # Avoid conflict with apostrophes (use double quotation marks)
+                print(" COMMENT \'%s\'" % strip_html_tags(columnComment.strip()), end="")
             print(",")
         if field and pk:
             primary.append(fname)
