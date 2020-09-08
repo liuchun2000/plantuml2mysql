@@ -30,7 +30,8 @@ entity cmdb_asset_category {
 
 will be converted to SQL:
 
-    CREATE TABLE IF NOT EXISTS `cmdb_asset_category` (
+    drop table if exists `cmdb_asset_category`;
+    CREATE TABLE `cmdb_asset_category` (
         id               INT(11) NOT NULL  COMMENT '主键id',
         asset_category_type VARCHAR(32) NOT NULL  COMMENT '资产类型,相同用途下唯一',
         asset_category_name VARCHAR(64) NOT NULL  COMMENT '分类名称',
@@ -67,7 +68,8 @@ See below the result of a more complicated sample from [database.md](database.md
 CREATE DATABASE a CHARACTER SET = utf8mb4 COLLATE = utf8_unicode_ci;
 USE a;
 
-CREATE TABLE IF NOT EXISTS `cmdb_asset_category` (
+drop table if exists `cmdb_asset_category`;
+CREATE TABLE `cmdb_asset_category` (
   id               INT(11) NOT NULL  COMMENT '主键id',
   asset_category_type VARCHAR(32) NOT NULL  COMMENT '资产类型,相同用途下唯一',
   asset_category_name VARCHAR(64) NOT NULL  COMMENT '分类名称',
@@ -82,7 +84,8 @@ CREATE TABLE IF NOT EXISTS `cmdb_asset_category` (
  gmt_modified     DATETIME     NULL,
  PRIMARY KEY (id)) COMMENT '资产分类';
 
-CREATE TABLE IF NOT EXISTS `cmdb_asset` (
+drop table if exists `cmdb_asset`;
+CREATE TABLE `cmdb_asset` (
   id               INT(11) NOT NULL  COMMENT '主键id',
   asset_type       VARCHAR(32) NOT NULL  COMMENT '资产类型,对应cmdb_asset_category的asset_category_type',
   asset_uuid       VARCHAR(64) NULL  COMMENT '资产唯一标识',
@@ -93,7 +96,8 @@ CREATE TABLE IF NOT EXISTS `cmdb_asset` (
  gmt_modified     DATETIME     NULL,
  PRIMARY KEY (id)) COMMENT '资产';
 
-CREATE TABLE IF NOT EXISTS `cmdb_asset_extend` (
+drop table if exists `cmdb_asset_extend`;
+CREATE TABLE `cmdb_asset_extend` (
   id               INT(11)  COMMENT '主键id',
   asset_id         INT(11) NOT NULL  COMMENT '资产id',
   asset_extend_key VARCHAR(64) NOT NULL  COMMENT 'key值',
@@ -104,7 +108,8 @@ CREATE TABLE IF NOT EXISTS `cmdb_asset_extend` (
  gmt_modified     DATETIME     NULL,
  PRIMARY KEY (id)) COMMENT '资产扩展数据';
 
-CREATE TABLE IF NOT EXISTS `cmdb_asset_extend_template` (
+drop table if exists `cmdb_asset_extend_template`;
+CREATE TABLE `cmdb_asset_extend_template` (
   id               INT(11)  COMMENT '主键id',
   asset_type       VARCHAR(32) NOT NULL  COMMENT '资产类型,对应cmdb_asset_category的asset_category_type',
   asset_extend_template_key VARCHAR(64) NOT NULL  COMMENT 'key值',
