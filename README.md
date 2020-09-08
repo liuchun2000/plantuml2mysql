@@ -55,12 +55,12 @@ into a class definition, will be ignored.
 
 The HTML markup in comments (after `--`) is stripped.
 
-See below the result of a more complicated sample from [database.plu](database.plu):
+See below the result of a more complicated sample from [database.md](database.md):
 
 ![database.png](database.png)
 
 ```bash
-    ./plantuml2mysql.py database.plu sampledb
+    ./plantuml2mysql.py database.md sampledb
 ```
 
 ```sql
