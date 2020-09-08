@@ -39,10 +39,10 @@ will be converted to SQL:
         asset_category_desc VARCHAR(512) NULL  COMMENT '备注',
         asset_category_parent_id INT(11) NOT NULL DEFAULT0  COMMENT '父分类id',
         asset_category_display_order INT(6) NOT NULL DEFAULT0  COMMENT '显示顺序 从小到大',
-        creator                   varchar(64)  null, 
-        gmt_create                datetime     null,
-        updater                   varchar(64)  null,
-        gmt_modified              datetime     null,
+        creator                   VARCHAR(64)  NULL, 
+        gmt_create                DATETIME     NULL,
+        updater                   VARCHAR(64)  NULL,
+        gmt_modified              DATETIME     NULL,
         PRIMARY KEY (id)) COMMENT '资产分类';
 
 Text between class name and `==` is table description.
@@ -64,8 +64,8 @@ See below the result of a more complicated sample from [database.md](database.md
 ```
 
 ```sql
-   CREATE DATABASE test CHARACTER SET = utf8mb4 COLLATE = utf8_unicode_ci;
-USE test;
+CREATE DATABASE a CHARACTER SET = utf8mb4 COLLATE = utf8_unicode_ci;
+USE a;
 
 CREATE TABLE IF NOT EXISTS `cmdb_asset_category` (
   id               INT(11) NOT NULL  COMMENT '主键id',
@@ -74,53 +74,50 @@ CREATE TABLE IF NOT EXISTS `cmdb_asset_category` (
   asset_category_purpose TINYINT(1) NOT NULL  COMMENT '用途 0-设备 1-软件 2-虚拟机',
   asset_category_leaf TINYINT(4) NOT NULL DEFAULT 0  COMMENT '是否叶子节点 0否 1是',
   asset_category_desc VARCHAR(512) NULL  COMMENT '备注',
-  asset_category_parent_id INT(11) NOT NULL DEFAULT0  COMMENT '父分类id',
-  asset_category_display_order INT(6) NOT NULL DEFAULT0  COMMENT '显示顺序 从小到大',
- creator                   varchar(64)  null, 
-gmt_create                datetime     null,
-updater                   varchar(64)  null,
-gmt_modified              datetime     null,
-  PRIMARY KEY (id)) COMMENT '资产分类';
+  asset_category_parent_id INT(11) NOT NULL DEFAULT 0  COMMENT '父分类id',
+  asset_category_display_order INT(6) NOT NULL DEFAULT 0  COMMENT '显示顺序 从小到大',
+ creator          VARCHAR(64)  NULL,
+ gmt_create       DATETIME     NULL,
+ updater          VARCHAR(64)  NULL,
+ gmt_modified     DATETIME     NULL,
+ PRIMARY KEY (id)) COMMENT '资产分类';
 
 CREATE TABLE IF NOT EXISTS `cmdb_asset` (
   id               INT(11) NOT NULL  COMMENT '主键id',
-  asset_type       VARCHAR(32) NOT NULL  COMMENT '资产类型 对应cmdb_asset_category的asset_category_type',
+  asset_type       VARCHAR(32) NOT NULL  COMMENT '资产类型,对应cmdb_asset_category的asset_category_type',
   asset_uuid       VARCHAR(64) NULL  COMMENT '资产唯一标识',
   asset_desc       VARCHAR(512) NULL  COMMENT '备注',
- creator                   varchar(64)  null, 
-gmt_create                datetime     null,
-updater                   varchar(64)  null,
-gmt_modified              datetime     null,
-  PRIMARY KEY (id)) COMMENT '资产';
+ creator          VARCHAR(64)  NULL,
+ gmt_create       DATETIME     NULL,
+ updater          VARCHAR(64)  NULL,
+ gmt_modified     DATETIME     NULL,
+ PRIMARY KEY (id)) COMMENT '资产';
 
 CREATE TABLE IF NOT EXISTS `cmdb_asset_extend` (
   id               INT(11)  COMMENT '主键id',
   asset_id         INT(11) NOT NULL  COMMENT '资产id',
   asset_extend_key VARCHAR(64) NOT NULL  COMMENT 'key值',
   asset_extend_value MEDIUMTEXT NOT NULL  COMMENT 'value值',
- creator                   varchar(64)  null, 
-gmt_create                datetime     null,
-updater                   varchar(64)  null,
-gmt_modified              datetime     null,
-  PRIMARY KEY (id),
-  INDEX (asset_id),
-  INDEX (asset_extend_key)
-) COMMENT '资产扩展数据';
+ creator          VARCHAR(64)  NULL,
+ gmt_create       DATETIME     NULL,
+ updater          VARCHAR(64)  NULL,
+ gmt_modified     DATETIME     NULL,
+ PRIMARY KEY (id)) COMMENT '资产扩展数据';
 
 CREATE TABLE IF NOT EXISTS `cmdb_asset_extend_template` (
   id               INT(11)  COMMENT '主键id',
-  asset_type       VARCHAR(32) NOT NULL  COMMENT '资产类型对应cmdb_asset_categor的asset_category_type',
+  asset_type       VARCHAR(32) NOT NULL  COMMENT '资产类型,对应cmdb_asset_category的asset_category_type',
   asset_extend_template_key VARCHAR(64) NOT NULL  COMMENT 'key值',
   asset_extend_template_ui MEDIUMTEXT NOT NULL  COMMENT '模板界面配置',
   asset_extend_template_data MEDIUMTEXT NOT NULL  COMMENT '模板数据配置',
   asset_extend_template_excel MEDIUMTEXT NOT NULL  COMMENT '模板Excel配置',
   asset_extend_template_alert MEDIUMTEXT NOT NULL  COMMENT '模板告警配置',
   asset_extend_template_desc VARCHAR(512) NULL  COMMENT '备注',
- creator                   varchar(64)  null, 
-gmt_create                datetime     null,
-updater                   varchar(64)  null,
-gmt_modified              datetime     null,
-  PRIMARY KEY (id)) COMMENT '资产扩展数据模板';                                               
+ creator          VARCHAR(64)  NULL,
+ gmt_create       DATETIME     NULL,
+ updater          VARCHAR(64)  NULL,
+ gmt_modified     DATETIME     NULL,
+ PRIMARY KEY (id)) COMMENT '资产扩展数据模板';                                            
 ```
 
 # Installation
