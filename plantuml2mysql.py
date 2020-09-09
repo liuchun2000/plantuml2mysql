@@ -29,7 +29,7 @@ def main():
         print_usage()
         sys.exit()
     try: # Avoid exception on STDOUT
-        with open(sys.argv[1]) as src:
+        with open(sys.argv[1], 'r', encoding='UTF-8') as src:
             data = src.readlines()
     except:
         print("Cannot open file: '" + sys.argv[1] + "'")
