@@ -61,7 +61,7 @@ See below the result of a more complicated sample from [database.md](database.md
 ![database.png](database.png)
 
 ```bash
-    ./plantuml2mysql.py database.md sampledb
+    ./plantuml2mysql.py database.md sampledb database.sql
 ```
 
 ```sql
