@@ -57,7 +57,10 @@ def main():
                 if "--" in l: # only one --
                     dest.writelines(l.strip()+"\n")
                     continue
-                comment = l.split("\'")
+                if "comment" in l:
+                    comment = l.split("comment")
+                else:
+                    comment = l.split("COMMENT")
                 i = comment[0].split()
                 fname = i[0]
                 if fname == ".." or fname == "__": # Separators in table definition
@@ -119,7 +122,7 @@ def main():
                     #print("  %-16s %s" % (fname, " ".join(i[1:]).upper()), end=" ")
                     if columnComment: #other description
                         # Avoid conflict with apostrophes (use double quotation marks)
-                        dest.writelines(" COMMENT \'%s\'" % strip_html_tags(columnComment.strip()))
+                        dest.writelines(" COMMENT %s" % strip_html_tags(columnComment.strip()))
                         #print(" COMMENT \'%s\'" % strip_html_tags(columnComment.strip()), end="")
                     dest.write(",\n")
                     #print(",")

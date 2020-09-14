@@ -8,43 +8,53 @@ with `#` prefix in field name (it means protected field
 in PlantUML) and define index fields with `+` (public field
 in PlantUML) prefix.
 
-Field type noted after field name as is. Support null/not null/auto_increment 
+Field type noted after field name as is. Support null/not null/auto_increment
  default value and comment that with the quotes
 
 For example entity definition:
 
 ```plantuml
-entity cmdb_asset_category {
-  资产分类
+entity mdm_vlan {
+  vlan信息表
   ==
-  #id int(11) not null '主键id'
-  asset_category_type varchar(32) not null '资产类型,相同用途下唯一'
-  asset_category_name varchar(64) not null '分类名称'
-  asset_category_purpose tinyint(1) not null  '用途 0-设备 1-软件 2-虚拟机'
-  asset_category_leaf tinyint(4) not null default 0 '是否叶子节点 0否 1是'
-  asset_category_desc varchar(512) null '备注'
-  asset_category_parent_id int(11) not null default0 '父分类id'
-  asset_category_display_order int(6) not null default0 '显示顺序 从小到大'
+  --租户ID改单位Id,vlanId改int
+  #vlan_id int(11) NOT NULL AUTO_INCREMENT COMMENT '自增id'
+  uuid varchar(64)  DEFAULT NULL COMMENT 'vlan的管理域id'
+  company_id int(11) DEFAULT NULL COMMENT '租户id'
+  vlan_name varchar(64)  DEFAULT NULL COMMENT 'vlan名称'
+  vlan_type tinyint(4) DEFAULT NULL COMMENT '1 standard network 2other'
+  virtual_datacenter varchar(64)  DEFAULT NULL COMMENT '虚拟中心的名称'
+  oss_id int(11) DEFAULT NULL COMMENT '所属管理域 云平台Id'
+  net_address varchar(64)  DEFAULT NULL COMMENT '网络地址 如192.168.0.0'
+  net_mask varchar(64)  DEFAULT NULL COMMENT 'vlan的子网掩码'
+  enabled tinyint(4) DEFAULT '1' COMMENT '1启用 0停用 default 1'
+  description varchar(512)  DEFAULT NULL COMMENT '描述'
+  data_source tinyint(1) DEFAULT '0'COMMENT '数据源 0-自动发现 1-云平台同步'
 }
 ```
 
 will be converted to SQL:
 
-    drop table if exists `cmdb_asset_category`;
-    CREATE TABLE `cmdb_asset_category` (
-        id               INT(11) NOT NULL  COMMENT '主键id',
-        asset_category_type VARCHAR(32) NOT NULL  COMMENT '资产类型,相同用途下唯一',
-        asset_category_name VARCHAR(64) NOT NULL  COMMENT '分类名称',
-        asset_category_purpose TINYINT(1) NOT NULL  COMMENT '用途 0-设备 1-软件 2-虚拟机',
-        asset_category_leaf TINYINT(4) NOT NULL DEFAULT 0  COMMENT '是否叶子节点 0否 1是',
-        asset_category_desc VARCHAR(512) NULL  COMMENT '备注',
-        asset_category_parent_id INT(11) NOT NULL DEFAULT0  COMMENT '父分类id',
-        asset_category_display_order INT(6) NOT NULL DEFAULT0  COMMENT '显示顺序 从小到大',
-        creator                   VARCHAR(64)  NULL, 
-        gmt_create                DATETIME     NULL,
-        updater                   VARCHAR(64)  NULL,
-        gmt_modified              DATETIME     NULL,
-        PRIMARY KEY (id)) COMMENT '资产分类';
+      drop table if exists `mdm_vlan`;
+      CREATE TABLE `mdm_vlan` (
+        --租户ID改单位Id,vlanId改int
+        vlan_id          INT(11) NOT NULL AUTO_INCREMENT  COMMENT '自增id',
+        uuid             VARCHAR(64) DEFAULT NULL  COMMENT 'vlan的管理域id',
+        company_id       INT(11) DEFAULT NULL  COMMENT '租户id',
+        vlan_name        VARCHAR(64) DEFAULT NULL  COMMENT 'vlan名称',
+        vlan_type        TINYINT(4) DEFAULT NULL  COMMENT '1 standard network 2other',
+        virtual_datacenter VARCHAR(64) DEFAULT NULL  COMMENT '虚拟中心的名称',
+        oss_id           INT(11) DEFAULT NULL  COMMENT '所属管理域 云平台Id',
+        net_address      VARCHAR(64) DEFAULT NULL  COMMENT '网络地址 如192.168.0.0',
+        net_mask         VARCHAR(64) DEFAULT NULL  COMMENT 'vlan的子网掩码',
+        enabled          TINYINT(4) DEFAULT  COMMENT '1',
+        description      VARCHAR(512) DEFAULT NULL  COMMENT '描述',
+        data_source      TINYINT(1) DEFAULT  COMMENT '0',
+        creator          VARCHAR(64)  NULL,
+        gmt_create       DATETIME     NULL,
+        updater          VARCHAR(64)  NULL,
+        gmt_modified     DATETIME     NULL,
+        PRIMARY KEY (vlan_id)) COMMENT 'vlan信息表';
 
 Text between class name and `==` is table description.
 The description of the table is mandatory.
@@ -134,7 +144,7 @@ run as any other Python script.
 # Reference
 grafov [https://github.com/grafov/plantuml2mysql]
 
-Thank for contributions: 
+Thank for contributions:
 
 * [An ecosystem of tools around PlantUML to render textual UML diagrams anywhere you want](https://modeling-languages.com/plantuml-textual-uml-online/)
 
