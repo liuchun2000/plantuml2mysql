@@ -54,14 +54,21 @@ def main():
                     continue
                 if not uml:
                     continue
+                if l == "```":
+                    uml = False
+                    continue
                 if "--" in l: # only one --
                     dest.writelines(l.strip()+"\n")
                     continue
-                if "comment" in l:
-                    comment = l.split("comment")
+                temp = l.split('\'')
+                length = len(temp)
+                fieldDetail = ""
+                if length > 3: # default value is varchar
+                    fieldDetail = "\'".join(temp[0:length-2])
+                    comment = temp[length-2]
                 else:
-                    comment = l.split("COMMENT")
-                i = comment[0].split()
+                    fieldDetail = temp[0]
+                i = fieldDetail.split()
                 fname = i[0]
                 if fname == ".." or fname == "__": # Separators in table definition
                     continue
@@ -73,13 +80,10 @@ def main():
                         idx = True
                     fname = fname[1:]
                 columnComment = ""
-                if field and len(comment)>1:
-                    columnComment = comment[1]
-                if l == "```":
-                    uml = False
-                    continue
-                if not uml:
-                    continue
+                if field and len(temp)>1 and len(temp)<=3:
+                    columnComment = temp[1]
+                if field and len(temp)>3:
+                    columnComment = comment
                 if l.startswith("entity"):
                     table = True; field = False
                     primary = []; index = ""
