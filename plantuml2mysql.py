@@ -5,7 +5,7 @@
 # See https://github.com/grafov/plantuml2mysql
 # The code is public domain.
 
-CHARSET="utf8_unicode_ci"
+CHARSET="utf8mb4_unicode_ci"
 
 import sys
 import re
@@ -37,9 +37,9 @@ def main():
     try: #
         with open(sys.argv[3],'w+', encoding='UTF-8') as dest:
             # Add information for future self ;-)
-            dest.writelines(["# Database created on", time.strftime('%d/%m/%y %H:%M',time.localtime()), "from", sys.argv[1],"\n"])
-            dest.writelines(["CREATE DATABASE %s CHARACTER SET = utf8mb4 COLLATE = %s;\n" % (sys.argv[2], CHARSET)])
-            dest.writelines(["USE %s;\n" % sys.argv[2]])
+            #dest.writelines(["# Database created on", time.strftime('%d/%m/%y %H:%M',time.localtime()), "from", sys.argv[1],"\n"])
+            #dest.writelines(["CREATE DATABASE %s CHARACTER SET = utf8mb4 COLLATE = %s;\n" % (sys.argv[2], CHARSET)])
+            #dest.writelines(["USE %s;\n" % sys.argv[2]])
             #print("# Database created on", time.strftime('%d/%m/%y %H:%M',time.localtime()), "from", sys.argv[1])
             #print("CREATE DATABASE %s CHARACTER SET = utf8mb4 COLLATE = %s;" % (sys.argv[2], CHARSET))
             #print("USE %s;\n" % sys.argv[2])
@@ -57,8 +57,7 @@ def main():
                 if l == "```":
                     uml = False
                     continue
-                if "--" in l: # only one --
-                    dest.writelines(l.strip()+"\n")
+                if l.startswith("--"): # only one --
                     continue
                 temp = l.split('\'')
                 length = len(temp)
@@ -84,7 +83,7 @@ def main():
                     columnComment = temp[1]
                 if field and len(temp)>3:
                     columnComment = comment
-                if l.startswith("entity"):
+                if l.startswith("entity "):
                     table = True; field = False
                     primary = []; index = ""
                     # Table names are quoted and lower cased to avoid conflict with a mySQL reserved wordpr
@@ -101,20 +100,25 @@ def main():
                         tableComment = l
                 if field and l == "}":
                     table = False; field = False
-                    dest.writelines(["  creator          VARCHAR(64)  NULL,\n"])
+                    dest.writelines(["  creator          VARCHAR(64)  NULL COMMENT '创建人',\n"])
                     #print(" creator          VARCHAR(64)  NULL,")
-                    dest.writelines(["  gmt_create       DATETIME     NULL,\n"])
+                    dest.writelines(["  gmt_create       DATETIME     NULL COMMENT '创建时间',\n"])
                     #print(" gmt_create       DATETIME     NULL,")
-                    dest.writelines(["  updater          VARCHAR(64)  NULL,\n"])
+                    dest.writelines(["  updater          VARCHAR(64)  NULL COMMENT '更新人',\n"])
                     #print(" updater          VARCHAR(64)  NULL,")
-                    dest.writelines(["  gmt_modified     DATETIME     NULL,\n"])
+                    dest.writelines(["  gmt_modified     DATETIME     NULL COMMENT '更新时间'"])
                     #print(" gmt_modified     DATETIME     NULL,")
-                    dest.writelines([" PRIMARY KEY (%s)" % ", ".join(primary)])
-                    #print(" PRIMARY KEY (%s)" % ", ".join(primary), end="")
-                    if index:
-                        dest.write(",\n%s\n" % index[:-2],)
-                        #print(",\n%s" % index[:-2],)
-                        index = ""
+                    if len(primary)>0 or len(index)>0:
+                        dest.write(",\n")
+                        if len(primary)>0:
+                            dest.writelines([" PRIMARY KEY (%s)" % ", ".join(primary)])
+                            #print(" PRIMARY KEY (%s)" % ", ".join(primary), end="")
+                        if len(index)>0:
+                            dest.write(",\n%s\n" % index[:-2],)
+                            #print(",\n%s" % index[:-2],)
+                            index = ""
+                    else:
+                        dest.write("\n")
                     dest.write(") COMMENT \'%s\';\n" % tableComment.strip())
                     #print(") COMMENT \'%s\';\n" % tableComment.strip())
                     continue
@@ -126,7 +130,7 @@ def main():
                     #print("  %-16s %s" % (fname, " ".join(i[1:]).upper()), end=" ")
                     if columnComment: #other description
                         # Avoid conflict with apostrophes (use double quotation marks)
-                        dest.writelines(" COMMENT %s" % strip_html_tags(columnComment.strip()))
+                        dest.writelines(" COMMENT \'%s\'" % strip_html_tags(columnComment.strip()))
                         #print(" COMMENT \'%s\'" % strip_html_tags(columnComment.strip()), end="")
                     dest.write(",\n")
                     #print(",")
